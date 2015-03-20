@@ -11,13 +11,13 @@ function PowerupSpawner(game, level) {
 	this.physics = function(timeDelta) {
 		for (var i = this.powerups.length - 1; i >= 0; i--) {
 			this.powerups[i].physics(timeDelta)
-			if (this.powerups[i].remove || this.powerups[i].y+30>this.game.canvas.height) {
+			if (this.powerups[i].remove || this.powerups[i].y+30>this.game.GAME_HEIGHT) {
 				this.powerups.splice(i, 1)
 			}
 		}
 	}
 	this.spawn = function() {
-		var x = Math.random() * canvas.width
+		var x = Math.random() * GAME_WIDTH
 		var y = -30
 		this.powerups.push(new Powerup(this, x, y, this.powers[Math.floor(Math.random() * this.powers.length)]))
 	}

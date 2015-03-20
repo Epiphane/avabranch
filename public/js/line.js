@@ -1,7 +1,7 @@
 function Line(game, color, x, y, r, keys, xSpeed, ySpeed) {
 	this.game = game
-	this.x = x || canvas.width / 2
-	this.y = y || canvas.height / 2
+	this.x = x || GAME_WIDTH / 2
+	this.y = y || GAME_HEIGHT / 2
 	this.r = r || 5
 	this.color = color || "#E67373"
 	this.points = []
@@ -15,7 +15,7 @@ function Line(game, color, x, y, r, keys, xSpeed, ySpeed) {
 	this.isDead = false
 	this.clearGone = function(){
 		for (var i = this.points.length - 1; i >= 0; i--) {
-				if (this.points[i].y > canvas.height+this.r*2) {
+				if (this.points[i].y > GAME_HEIGHT+this.r*2) {
 					this.points.splice(0, i)
 					break
 				}
@@ -70,7 +70,7 @@ function Line(game, color, x, y, r, keys, xSpeed, ySpeed) {
 
 		//check collision
 		if (game.objects["spawner"] && !this.isDead) {
-			if (this.x - this.r < 0 || this.x + this.r > canvas.width) {
+			if (this.x - this.r < 0 || this.x + this.r > GAME_WIDTH) {
 				this.isDead = true
 				return
 			}

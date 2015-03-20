@@ -4,8 +4,8 @@ function Player(game, x, y, speed, ySpeed) {
 	this.ySpeed = ySpeed || 4
 	this.lineCount = 4
 	this.lineRadius = 10
-	this.x = x || canvas.width / 2 - this.lineRadius * this.lineCount
-	this.y = y || canvas.height - canvas.height / 3
+	this.x = x || GAME_WIDTH / 2 - this.lineRadius * this.lineCount
+	this.y = y || GAME_HEIGHT - GAME_HEIGHT / 3
 	this.colors = ["#E67373", "#ECEC85", "#9DE970", "#708EE9"]//red, yellow, green, blue
 	//this.keys=[['A','S'],['D','F'],['J','K'],['L',';']]
 	this.branchState = 0

@@ -10,7 +10,10 @@ var keyMap = {
 	40 : 'down',
 	186 : ';'
 };
+var musicEnabled = true;
 
+var hud;
+var GAME_WIDTH = 800, GAME_HEIGHT = 600;
 function init() {
 	if(localStorage.soundSettings && localStorage.soundSettings=="off")
 		turnOffSound()
@@ -19,10 +22,30 @@ function init() {
 	canvas.height = 600
 	game = new Game(canvas)
 	global_controls = new Controls()
-	var hud = new HUD(game, true)
+	hud = new HUD(game, true)
 	game.addObject("hud", hud)
-	hud.draw(game.ctx)
+
+	window.onresize();
 }
+
+window.onresize = function() {
+	var wrapper = canvas.parentElement;
+
+	var width = wrapper.width || wrapper.clientWidth;
+	var height = wrapper.height || wrapper.clientHeight;
+	if (width * 3 / 4 > height) {
+		canvas.height = height;
+		canvas.width = height * 4 / 3;
+	}
+	else {
+		canvas.width = width;
+		canvas.height = width * 3 / 4;
+	}
+
+	game.ctx.scale(canvas.width / GAME_WIDTH, canvas.height / GAME_HEIGHT);
+	hud.draw(game.ctx);
+	game.ctx.restore();
+};
 
 function startGame() {
 	keyListeners = []
@@ -36,21 +59,21 @@ function startGame() {
 	game.addObject("player", player)
 	game.addObject("power_spawn", power_spawner)
 	game.addObject("hud", hud)
+	game.setMusic(true);
 	game.update()
 }
 
 function toggleSound(){
 	var button = document.getElementById("mute")
-	var audio = document.getElementById("bgaudio")
 	if(button.className.indexOf("up")!=-1){//need to mute
 		button.className = button.className.replace("up","off")
-		audio.pause()
 		localStorage.soundSettings="off"
+		musicEnabled = true;
 	}
 	else{//turn back on
 		button.className = button.className.replace("off","up")
-		audio.play()
 		localStorage.soundSettings="on"
+		musicEnabled = true;
 	}
 }
 

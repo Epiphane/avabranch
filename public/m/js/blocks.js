@@ -12,7 +12,7 @@ function BlockSpawner(game, speed, level) {
 	this.physics = function(timeDelta) {
 		if (this.blocks.length >= this.clearCount) {
 			for (var i = this.blocks.length - 1; i >= 0; i--) {
-				if (this.blocks[i].y > canvas.height) {
+				if (this.blocks[i].y > GAME_HEIGHT) {
 					this.blocks.splice(0, i)
 					break
 				}

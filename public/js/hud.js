@@ -17,28 +17,30 @@ function HUD(game, pre) {
 		this.multiplier -= dead
 		if (this.multiplier === 0)
 			this.gameOver = true
+		this.game.setMusic(!this.gameOver);
 		this.multiplier *= branchState
 		this.score += Math.ceil(1 * this.multiplier * timeDelta / 100)
 	}
+
 	this.draw = function(ctx) {
 		ctx.fillStyle = "#222"
 		ctx.font = "20px sans-serif"
 		ctx.fillText("Score: " + this.score, 10, 24)
 		ctx.fillText("Multiplier: " + this.multiplier, 10, 48)
 		if (this.game.objects['spawner'])
-			ctx.fillText("Level: " + this.game.objects['spawner'].level, this.game.canvas.width - 100, 24)
+			ctx.fillText("Level: " + this.game.objects['spawner'].level, GAME_WIDTH - 100, 24)
 
 		if (this.pre) {
 			var b = {
 				w : 400,
 				h : 400
 			}
-			ctx.fillRect(canvas.width / 2 - b.w / 2, canvas.height / 2 - b.h / 2, b.w, b.h)
+			ctx.fillRect(GAME_WIDTH / 2 - b.w / 2, GAME_HEIGHT / 2 - b.h / 2, b.w, b.h)
 			ctx.fillStyle = "#FFF"
 			var fontSize = 30
 			ctx.font = fontSize + "px bold sans-serif"
-			var x = Math.floor(canvas.width / 2 - 150)
-			var y = Math.floor(canvas.height / 2 - fontSize / 2) - 100
+			var x = Math.floor(GAME_WIDTH / 2 - 150)
+			var y = Math.floor(GAME_HEIGHT / 2 - fontSize / 2) - 100
 			ctx.fillText("Avabranch", x, y)
 			var best = localStorage.bestScore || this.score
 			ctx.fillText("Best: " + best, x, y + 60)
@@ -51,12 +53,12 @@ function HUD(game, pre) {
 				w : 400,
 				h : 400
 			}
-			ctx.fillRect(canvas.width / 2 - b.w / 2, canvas.height / 2 - b.h / 2, b.w, b.h)
+			ctx.fillRect(GAME_WIDTH / 2 - b.w / 2, GAME_HEIGHT / 2 - b.h / 2, b.w, b.h)
 			ctx.fillStyle = "#FFF"
 			var fontSize = 30
 			ctx.font = fontSize + "px bold sans-serif"
-			var x = Math.floor(canvas.width / 2 - 150)
-			var y = Math.floor(canvas.height / 2 - fontSize / 2) - 50
+			var x = Math.floor(GAME_WIDTH / 2 - 150)
+			var y = Math.floor(GAME_HEIGHT / 2 - fontSize / 2) - 50
 			ctx.fillText("Game Over", x, y)
 			var best = localStorage.bestScore || 0
 			if (this.score > best) {
@@ -72,18 +74,18 @@ function HUD(game, pre) {
 				w : 400,
 				h : 400
 			}
-			ctx.fillRect(canvas.width / 2 - b.w / 2, canvas.height / 2 - b.h / 2, b.w, b.h)
+			ctx.fillRect(GAME_WIDTH / 2 - b.w / 2, GAME_HEIGHT / 2 - b.h / 2, b.w, b.h)
 			ctx.fillStyle = "#FFF"
 			var fontSize = 30
 			ctx.font = fontSize + "px bold sans-serif"
-			var x = Math.floor(canvas.width / 2 - 150)
-			var y = Math.floor(canvas.height / 2 - fontSize / 2) - 50
+			var x = Math.floor(GAME_WIDTH / 2 - 150)
+			var y = Math.floor(GAME_HEIGHT / 2 - fontSize / 2) - 50
 			ctx.fillText("Paused", x, y)
 			ctx.fillText("[p] to resume", x, y + 80)
 		} else if (this.game.objects['player']) {
 			var player = this.game.objects['player']
 			var sX = 10
-			var sY = this.game.canvas.height - 50
+			var sY = GAME_HEIGHT - 50
 			ctx.fillText("controls ", sX, sY)
 			sY += 10
 			//need list of lines of diff controls, same controls are in list w/color

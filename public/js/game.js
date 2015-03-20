@@ -1,3 +1,11 @@
+var music = new buzz.sound("/audio/background", {
+	formats: [ "mp3", "ogg" ],
+	preload: true,
+	autoplay: false,
+	loop: true
+});
+var musicTime = 4.55;
+
 function Game(canvas) {
 	this.canvas = canvas
 	this.ctx = canvas.getContext("2d")
@@ -8,18 +16,38 @@ function Game(canvas) {
 	this.play = true
 	this.timeTillLevel = 10000
 	this.timer = 0
+	
+	var musicPlaying = false;
+	this.setMusic = function(on) {
+		if (on != musicPlaying) {
+			if (on) {
+				music.setTime(musicTime);
+				music.fadeIn();
+			}
+			else {
+				music.fadeOut(200, function() {
+					musicTime = music.getTime();
+				});
+			}
+
+			musicPlaying = on;
+		}
+	}
 	this.update = function(time) {
 		if (!this.play)
 			return;
+
 		this.timeDelta = time - this.prevTime
 		this.prevTime = time
 		if (isNaN(this.timeDelta)) {
 			requestAnimFrame(this.update.bind(this))
 			return
 		}
-		this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height)
+		// this.ctx.scale(canvas.width / GAME_WIDTH, canvas.height / GAME_HEIGHT);
+		this.ctx.clearRect(0, 0, GAME_WIDTH, GAME_HEIGHT)
 		this.physics(this.timeDelta)
 		this.draw()
+		this.ctx.restore();
 		requestAnimFrame(this.update.bind(this))
 	}
 	this.physics = function(timeDelta) {
