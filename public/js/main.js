@@ -10,7 +10,6 @@ var keyMap = {
 	40 : 'down',
 	186 : ';'
 };
-var musicEnabled = true;
 
 var hud;
 var GAME_WIDTH = 800, GAME_HEIGHT = 600;
@@ -68,12 +67,12 @@ function toggleSound(){
 	if(button.className.indexOf("up")!=-1){//need to mute
 		button.className = button.className.replace("up","off")
 		localStorage.soundSettings="off"
-		musicEnabled = true;
+		music.mute();
 	}
 	else{//turn back on
 		button.className = button.className.replace("off","up")
 		localStorage.soundSettings="on"
-		musicEnabled = true;
+		music.unmute();
 	}
 }
 

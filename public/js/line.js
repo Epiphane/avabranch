@@ -1,4 +1,4 @@
-function Line(game, color, x, y, r, keys, xSpeed, ySpeed) {
+function Line(game, color, x, y, r, keys, xSpeed, ySpeed, sound) {
 	this.game = game
 	this.x = x || GAME_WIDTH / 2
 	this.y = y || GAME_HEIGHT / 2
@@ -12,7 +12,29 @@ function Line(game, color, x, y, r, keys, xSpeed, ySpeed) {
 	this.tarXTime = 0
 	this.speed = xSpeed || 4
 	this.ySpeed = ySpeed || 4
-	this.isDead = false
+	this.isDead = true;
+	
+	sound.play();
+	sound.mute();
+	
+	var fading = false;
+	this.setDead = function(dead) {
+		this.isDead = dead;
+		if (!dead) {
+			fading = true;
+			sound.unmute();
+			sound.fadeIn(200, function() {
+				fading = false;
+			});
+		}
+		else {
+			if (fading)
+				sound.mute();
+			else
+				sound.fadeOut(200);
+		}
+	};
+
 	this.clearGone = function(){
 		for (var i = this.points.length - 1; i >= 0; i--) {
 				if (this.points[i].y > GAME_HEIGHT+this.r*2) {
@@ -30,7 +52,7 @@ function Line(game, color, x, y, r, keys, xSpeed, ySpeed) {
 			}
 		}
 		
-		this.isDead=false
+		this.setDead(false);
 	}
 	this.physics = function(timeDelta) {
 		if (this.points.length >= this.clearCount) {
@@ -71,13 +93,14 @@ function Line(game, color, x, y, r, keys, xSpeed, ySpeed) {
 		//check collision
 		if (game.objects["spawner"] && !this.isDead) {
 			if (this.x - this.r < 0 || this.x + this.r > GAME_WIDTH) {
-				this.isDead = true
+					this.setDead(true);
+				// this.isDead = true
 				return
 			}
 			var blocks = game.objects["spawner"].blocks
 			for (var i = 0; i < blocks.length; i++) {
 				if(collideRoundSquare(this,blocks[i])){
-					this.isDead = true
+					this.setDead(true);
 					break
 				}
 			}

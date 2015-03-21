@@ -1,10 +1,10 @@
-var music = new buzz.sound("/audio/background", {
-	formats: [ "mp3", "ogg" ],
-	preload: true,
-	autoplay: false,
-	loop: true
-});
-var musicTime = 4.55;
+// var music = new buzz.sound("/audio/background", {
+// 	formats: [ "mp3", "ogg" ],
+// 	preload: true,
+// 	autoplay: false,
+// 	loop: true
+// });
+// var musicTime = 4.55;
 
 function Game(canvas) {
 	this.canvas = canvas
@@ -17,17 +17,28 @@ function Game(canvas) {
 	this.timeTillLevel = 10000
 	this.timer = 0
 	
+	var musicFading = false;
 	var musicPlaying = false;
 	this.setMusic = function(on) {
+		return;
+
 		if (on != musicPlaying) {
 			if (on) {
 				music.setTime(musicTime);
-				music.fadeIn();
+				musicFading = true;
+				music.fadeIn(200, function() {
+					musicFading = false;
+				});
 			}
 			else {
-				music.fadeOut(200, function() {
+				if (musicFading) {
+					music.stop();
 					musicTime = music.getTime();
-				});
+				}
+				else
+					music.fadeOut(200, function() {
+						musicTime = music.getTime();
+					});
 			}
 
 			musicPlaying = on;
@@ -36,6 +47,8 @@ function Game(canvas) {
 	this.update = function(time) {
 		if (!this.play)
 			return;
+
+		syncTracks();
 
 		this.timeDelta = time - this.prevTime
 		this.prevTime = time

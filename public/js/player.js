@@ -1,3 +1,35 @@
+var tracks = [
+	new buzz.sound("/audio/track1", {
+		formats: [ "mp3", "ogg" ],
+		preload: true,
+		autoplay: false,
+		loop: true
+	}),
+	new buzz.sound("/audio/track2", {
+		formats: [ "mp3", "ogg" ],
+		preload: true,
+		autoplay: false,
+		loop: true
+	}),
+	new buzz.sound("/audio/track3", {
+		formats: [ "mp3", "ogg" ],
+		preload: true,
+		autoplay: false,
+		loop: true
+	}),
+	new buzz.sound("/audio/track4", {
+		formats: [ "mp3", "ogg" ],
+		preload: true,
+		autoplay: false,
+		loop: true
+	})
+];
+function syncTracks() {
+	// var time = tracks[0].getTime();
+	// for(var i = 1; i < 4; i ++)
+	// 	tracks[i].setTime(time);
+}
+
 function Player(game, x, y, speed, ySpeed) {
 	this.game = game
 	this.speed = speed || 4
@@ -16,11 +48,13 @@ function Player(game, x, y, speed, ySpeed) {
 	//}
 	this.lines = []
 	for (var i = 0; i < this.lineCount; i++) {
-		this.lines.push(new Line(this.game, global_controls.colors[i], this.x + i * this.lineRadius * 2, this.y, this.lineRadius, global_controls.keyMaps[this.branchStates[this.branchState]][i], this.speed, this.ySpeed))
+		this.lines.push(new Line(this.game, global_controls.colors[i], this.x + i * this.lineRadius * 2, this.y, this.lineRadius, global_controls.keyMaps[this.branchStates[this.branchState]][i], this.speed, this.ySpeed, tracks[3 - i]));
 	}
 	//bad - start with 2 lines
-	this.lines[2].isDead = true
-	this.lines[3].isDead = true
+	this.lines[0].setDead(false);
+	this.lines[1].setDead(false);
+	this.lines[2].setDead(true);
+	this.lines[3].setDead(true);
 	
 	this.physics = function(timeDelta) {
 		var dead = 0
