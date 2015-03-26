@@ -11,7 +11,7 @@ function PowerupSpawner(game, level) {
 	this.physics = function(timeDelta) {
 		for (var i = this.powerups.length - 1; i >= 0; i--) {
 			this.powerups[i].physics(timeDelta)
-			if (this.powerups[i].remove || this.powerups[i].y+30>this.game.GAME_HEIGHT) {
+			if (this.powerups[i].isDead) {
 				this.powerups.splice(i, 1)
 			}
 		}
@@ -30,7 +30,7 @@ function Powerup(parent, x, y, type) {
 	this.r = 5
 	this.isDead = false
 	this.remove = false
-	this.speed = 3
+	this.speed = 4
 	this.type = type || "slow"
 	this.particles = []
 	this.particleCount = 120
@@ -91,14 +91,8 @@ function Powerup(parent, x, y, type) {
 		this.particles.push(new Particle(this, Math.random() / 20 + .05, Math.random() * 15 + 6))
 	}
 	this.draw = function(ctx) {
-		for (var i = 0; i < this.particles.length; i++) {
-			this.particles[i].draw(ctx)
-		}
 		ctx.fillStyle = this.color
-		ctx.beginPath()
-		ctx.arc(this.x, this.y, this.r, Math.PI * 2, false);
-		ctx.fill();
-
+		ctx.fillRect(0, this.y, GAME_WIDTH, 10);
 	}
 	this.physics = function(timeDelta) {
 		if (!this.isDead)

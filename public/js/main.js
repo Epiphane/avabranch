@@ -41,6 +41,7 @@ window.onresize = function() {
 		canvas.height = width * 3 / 4;
 	}
 
+	game.ctx.save();
 	game.ctx.scale(canvas.width / GAME_WIDTH, canvas.height / GAME_HEIGHT);
 	hud.draw(game.ctx);
 	game.ctx.restore();

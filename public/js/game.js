@@ -14,7 +14,7 @@ function Game(canvas) {
 	this.speed = 4
 	this.paused = false
 	this.play = true
-	this.timeTillLevel = 10000
+	this.timeTillLevel = 5000
 	this.timer = 0
 	
 	var musicFading = false;
@@ -56,7 +56,8 @@ function Game(canvas) {
 			requestAnimFrame(this.update.bind(this))
 			return
 		}
-		// this.ctx.scale(canvas.width / GAME_WIDTH, canvas.height / GAME_HEIGHT);
+		this.ctx.save();
+		this.ctx.scale(canvas.width / GAME_WIDTH, canvas.height / GAME_HEIGHT);
 		this.ctx.clearRect(0, 0, GAME_WIDTH, GAME_HEIGHT)
 		this.physics(this.timeDelta)
 		this.draw()
@@ -81,7 +82,7 @@ function Game(canvas) {
 
 	this.draw = function() {
 		for (var i = 0; i < this.objects.length; i++) {
-			this.objects[i].draw(this.ctx)
+			this.objects[i].draw(this.ctx);
 		}
 	}
 

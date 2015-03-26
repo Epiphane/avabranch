@@ -1,33 +1,42 @@
 var tracks = [
-	new buzz.sound("/audio/track1", {
+	new buz.sound("/audio/track1", {
 		formats: [ "mp3", "ogg" ],
 		preload: true,
 		autoplay: false,
-		loop: true
+		loop: true,
+		analyse: true
 	}),
-	new buzz.sound("/audio/track2", {
+	new buz.sound("/audio/track2", {
 		formats: [ "mp3", "ogg" ],
 		preload: true,
 		autoplay: false,
-		loop: true
+		loop: true,
+		analyse: true
 	}),
-	new buzz.sound("/audio/track3", {
+	new buz.sound("/audio/track3", {
 		formats: [ "mp3", "ogg" ],
 		preload: true,
 		autoplay: false,
-		loop: true
+		loop: true,
+		analyse: true
 	}),
-	new buzz.sound("/audio/track4", {
+	new buz.sound("/audio/track4", {
 		formats: [ "mp3", "ogg" ],
 		preload: true,
 		autoplay: false,
-		loop: true
+		loop: true,
+		analyse: true
 	})
 ];
 function syncTracks() {
-	// var time = tracks[0].getTime();
-	// for(var i = 1; i < 4; i ++)
-	// 	tracks[i].setTime(time);
+	// console.log(tracks[3].getVolume());
+	var time = tracks[0].getTime();
+	for(var i = 1; i < 4; i ++) {
+		var t = tracks[i].getTime();
+		if (Math.abs(t - time) > 0.1) {
+			tracks[i].setTime(time);
+		}
+	}
 }
 
 function Player(game, x, y, speed, ySpeed) {
@@ -53,8 +62,8 @@ function Player(game, x, y, speed, ySpeed) {
 	//bad - start with 2 lines
 	this.lines[0].setDead(false);
 	this.lines[1].setDead(false);
-	this.lines[2].setDead(true);
-	this.lines[3].setDead(true);
+	this.lines[2].setDead(false);
+	this.lines[3].setDead(false);
 	
 	this.physics = function(timeDelta) {
 		var dead = 0

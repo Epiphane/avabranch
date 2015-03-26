@@ -3,6 +3,7 @@ function Line(game, color, x, y, r, keys, xSpeed, ySpeed, sound) {
 	this.x = x || GAME_WIDTH / 2
 	this.y = y || GAME_HEIGHT / 2
 	this.r = r || 5
+	this.base_r = r || 5
 	this.color = color || "#E67373"
 	this.points = []
 	this.keys = keys || ['A', 'S']
@@ -13,9 +14,28 @@ function Line(game, color, x, y, r, keys, xSpeed, ySpeed, sound) {
 	this.speed = xSpeed || 4
 	this.ySpeed = ySpeed || 4
 	this.isDead = true;
+	this.ticks_per_point = 1;
+	this.ticks = 0;
 	
 	sound.play();
 	sound.mute();
+
+	if (sound.analyse) {
+		var self = this;
+		sound.onaudioprocess = function() {
+	      var array = new Uint8Array(sound.analyser.frequencyBinCount);
+	      sound.analyser.getByteFrequencyData(array);
+
+	      var tot = 0, num = 0;
+	      for (var i in array) {
+	      	tot += array[i];
+	      	num ++;
+	      }
+	      var average = tot / num;
+
+	      self.r = average / 6 + self.base_r;
+		}
+	}
 	
 	var fading = false;
 	this.setDead = function(dead) {
@@ -81,20 +101,21 @@ function Line(game, color, x, y, r, keys, xSpeed, ySpeed, sound) {
 				this.tarXRate = -1
 			}
 		}
-		if (!this.isDead) {
+		if (!this.isDead) {//} && this.ticks-- <= 0) {
 			this.points.push({
 				y : this.y,
 				x : this.x,
-				r : this.r,
+				r : this.r - 3,
 				color : this.color
-			})
+			});
+
+			this.ticks = this.ticks_per_point;
 		}
 
 		//check collision
 		if (game.objects["spawner"] && !this.isDead) {
 			if (this.x - this.r < 0 || this.x + this.r > GAME_WIDTH) {
 					this.setDead(true);
-				// this.isDead = true
 				return
 			}
 			var blocks = game.objects["spawner"].blocks
@@ -106,9 +127,9 @@ function Line(game, color, x, y, r, keys, xSpeed, ySpeed, sound) {
 			}
 			var powerups = game.objects['power_spawn'].powerups
 			for(var i =0;i<powerups.length;i++){
-				if(!powerups[i].isDead && collideRoundRound(this,powerups[i])){
-					powerups[i].act()
-					powerups[i].isDead=true
+				if(!powerups[i].isDead && this.y <= powerups[i].y){
+					powerups[i].act();
+					powerups[i].isDead = true;
 					break
 				}
 			}
@@ -122,7 +143,7 @@ function Line(game, color, x, y, r, keys, xSpeed, ySpeed, sound) {
 			return
 
 		ctx.beginPath();
-		ctx.lineWidth=head.r*2
+		ctx.lineWidth=this.base_r * 2
 		ctx.lineCap='round'
 		ctx.lineJoin='round'
 		ctx.moveTo(tail.x,tail.y);
@@ -131,9 +152,18 @@ function Line(game, color, x, y, r, keys, xSpeed, ySpeed, sound) {
 		for (var i = 1; i < this.points.length; i++) {
 			var point = this.points[i]
 			ctx.lineTo(point.x,point.y)
+			// ctx.arc(point.x, point.y, point.r, 0, 2 * Math.PI, false);
+			// ctx.fill();
+			// ctx.closePath();
+			// ctx.fillRect(point.x - point.r / 2, point.y - point.r / 2, point.r, point.r);
 		}
 		ctx.stroke();
-		ctx.closePath()
-		
+		ctx.closePath();
+
+		ctx.beginPath();
+		ctx.fillStyle = 'white';
+		ctx.arc(head.x, head.y, head.r + 1, 0, 2 * Math.PI, false);
+		ctx.fill();
+		ctx.closePath();
 	}
 }

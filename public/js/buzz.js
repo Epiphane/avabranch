@@ -21,7 +21,7 @@
     "use strict";
     var AudioContext = window.AudioContext || window.webkitAudioContext;
     var buzz = {
-        audioCtx: window.AudioContext ? new AudioContext() : null,
+        audioCtx: AudioContext ? new AudioContext() : null,
         defaults: {
             autoplay: false,
             duration: 5e3,
@@ -507,6 +507,10 @@
                         }
                     }
                 }
+
+                this.sourceNode = buzz.audioCtx.createBufferSource();
+                this.sourceNode.connect(buzz.audioCtx.destination);
+
                 this.sound = doc.createElement("audio");
                 if (options.webAudioApi && buzz.audioCtx) {
                     this.source = buzz.audioCtx.createMediaElementSource(this.sound);
