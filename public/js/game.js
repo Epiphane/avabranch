@@ -62,18 +62,19 @@ function Game(canvas) {
 			requestAnimFrame(this.update.bind(this))
 			return
 		}
-		this.ctx.fillStyle = '#333';
+		this.ctx.fillStyle = '#000';
 		this.ctx.fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
 		this.ext_ctx.clearRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
 		this.physics(this.timeDelta)
 		this.draw()
 
-		var numSlices = 200;
+		var numSlices = GAME_HEIGHT / 4;
 		var sliceHeight = GAME_HEIGHT / numSlices;
-		var topWidth = 0.25;
+		var topWidth = 0.1;
+		var bottomWidth = 0.75;
 		for (var n = 0; n < numSlices; n ++) {
 			var sy = n * sliceHeight;
-			var dWidth = topWidth + (1 - topWidth) * (n + 1) / numSlices;
+			var dWidth = topWidth + bottomWidth * (1 - topWidth) * (n + 1) / numSlices;
 
 			dWidth *= this.ext_canvas.width;
 			var dx = (this.ext_canvas.width - dWidth) / 2;
@@ -104,6 +105,10 @@ function Game(canvas) {
 	}
 
 	this.draw = function() {
+		this.ctx.fillStyle = '#232323';
+		for (var x = 0; x <= GAME_WIDTH; x += GAME_WIDTH / 8)
+			this.ctx.fillRect(x - 5, 0, 10, GAME_HEIGHT);
+
 		for (var i = 0; i < this.objects.length; i++) {
 			if (this.objects[i] === this.objects['hud'])
 				; // Ignore

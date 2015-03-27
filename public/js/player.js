@@ -71,8 +71,8 @@ function Player(game, x, y, speed, ySpeed) {
 	//bad - start with 2 lines
 	this.lines[0].setDead(false);
 	this.lines[1].setDead(false);
-	this.lines[2].setDead(false);
-	this.lines[3].setDead(false);
+	this.lines[2].setDead(true);
+	this.lines[3].setDead(true);
 	
 	this.physics = function(timeDelta) {
 		var dead = 0

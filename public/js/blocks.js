@@ -25,9 +25,9 @@ function BlockSpawner(game, speed, level) {
 		 *
 		 */
 		if (Math.random() * 100 > 100 - this.level / 2 - 1) {
-			var x = Math.random() * canvas.width
-			var w = Math.random() * 90 + 10
-			var h = Math.random() * 90 + 10
+			var w = GAME_WIDTH / 8;
+			var x = Math.floor(Math.random() * 8) * w;
+			var h = Math.ceil(Math.random() * 9) * 10
 			var y = -h
 			this.blocks.push(new Block(x, y, w, h, this.speed))
 		}

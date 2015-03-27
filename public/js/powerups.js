@@ -2,7 +2,8 @@ function PowerupSpawner(game, level) {
 	this.game = game
 	this.powerups = []
 	this.level = level || 1
-	this.powers = ["slow", "speed", "grow", "shrink"]
+	this.colors = ["#E67373", "#ECEC85", "#708EE9", "#9DE970"];
+	this.powers = ["grow", 	  "shrink",  "slow",    "speed"];
 	this.draw = function(ctx) {
 		for (var i = 0; i < this.powerups.length; i++) {
 			this.powerups[i].draw(ctx)
@@ -19,7 +20,13 @@ function PowerupSpawner(game, level) {
 	this.spawn = function() {
 		var x = Math.random() * GAME_WIDTH
 		var y = -30
-		this.powerups.push(new Powerup(this, x, y, this.powers[Math.floor(Math.random() * this.powers.length)]))
+		var i = 0;
+		while (i < this.powers.length && game.objects["player"].hasCol(this.colors[i]))
+			i ++;
+		if (i === 4)
+			i = Math.floor(Math.random() * this.powers.length);
+
+		this.powerups.push(new Powerup(this, x, y, this.powers[i]))
 	}
 }
 

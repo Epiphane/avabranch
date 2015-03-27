@@ -66,6 +66,7 @@ function Line(game, color, x, y, r, keys, xSpeed, ySpeed, sound) {
 	
 	var fading = false;
 	this.setDead = function(dead) {
+		console.log(dead);
 		this.isDead = dead;
 		if (!dead) {
 			fading = true;
