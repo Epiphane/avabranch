@@ -43,7 +43,7 @@ window.onresize = function() {
 
 	game.ctx.save();
 	game.ctx.scale(canvas.width / GAME_WIDTH, canvas.height / GAME_HEIGHT);
-	hud.draw(game.ctx);
+	hud.draw(game.ext_ctx);
 	game.ctx.restore();
 };
 

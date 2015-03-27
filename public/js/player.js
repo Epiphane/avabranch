@@ -4,21 +4,21 @@ var tracks = [
 		preload: true,
 		autoplay: false,
 		loop: true,
-		analyse: true
+		// analyse: true
 	}),
 	new buz.sound("/audio/track2", {
 		formats: [ "mp3", "ogg" ],
 		preload: true,
 		autoplay: false,
 		loop: true,
-		analyse: true
+		// analyse: true
 	}),
 	new buz.sound("/audio/track3", {
 		formats: [ "mp3", "ogg" ],
 		preload: true,
 		autoplay: false,
 		loop: true,
-		analyse: true
+		// analyse: true
 	}),
 	new buz.sound("/audio/track4", {
 		formats: [ "mp3", "ogg" ],
@@ -28,6 +28,15 @@ var tracks = [
 		analyse: true
 	})
 ];
+var bps = 2.5167;
+// var t, nt = new Date().getTime();
+// var canv = document.getElementById('canv');
+// setInterval(function() {
+// 	console.log('beat');
+// 	canv.style.background = '#333';
+// 	setTimeout(function() { canv.style.background = 'black'; }, 50);
+// }, 1000 / bps);
+
 function syncTracks() {
 	// console.log(tracks[3].getVolume());
 	var time = tracks[0].getTime();

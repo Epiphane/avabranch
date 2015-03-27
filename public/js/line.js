@@ -16,12 +16,16 @@ function Line(game, color, x, y, r, keys, xSpeed, ySpeed, sound) {
 	this.isDead = true;
 	this.ticks_per_point = 1;
 	this.ticks = 0;
-	
+
+	this.times = [0, 0, 0, 0, 0, 0, 0, 0, 0];
+
 	sound.play();
 	sound.mute();
 
 	if (sound.analyse) {
 		var self = this;
+		// var max = 0, up = true;
+		// var nt = new Date().getTime();
 		sound.onaudioprocess = function() {
 	      var array = new Uint8Array(sound.analyser.frequencyBinCount);
 	      sound.analyser.getByteFrequencyData(array);
@@ -32,6 +36,29 @@ function Line(game, color, x, y, r, keys, xSpeed, ySpeed, sound) {
 	      	num ++;
 	      }
 	      var average = tot / num;
+
+	      // 2.5167
+	      // if ((up && average > max) || (!up && average < max)) {
+	      // 	max = average;
+	      // 	document.getElementById('canv').style.background = 'black';
+	      // }
+	      // else {
+	      // 	up = !up;
+	      // 	if (!up) {
+		     //  	var t = new Date().getTime();
+		     //  	self.times.push(t - nt);
+		     //  	self.times.shift();
+		     //  	nt = t;
+
+		     //  	var tot = 0, num = 0;
+			    //   for (var i in self.times) {
+			    //   	tot += self.times[i];
+			    //   	num ++;
+			    //   }
+		     //  	console.log(1000 / (tot / num));
+		     //  	document.getElementById('canv').style.background = '#333333';
+		     //  }
+	      // }
 
 	      self.r = average / 6 + self.base_r;
 		}

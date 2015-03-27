@@ -7,8 +7,14 @@
 // var musicTime = 4.55;
 
 function Game(canvas) {
-	this.canvas = canvas
-	this.ctx = canvas.getContext("2d")
+	this.ext_canvas = canvas
+	this.ext_ctx = canvas.getContext("2d")
+
+	this.canvas = document.createElement('canvas');
+	this.canvas.width = GAME_WIDTH;
+	this.canvas.height = GAME_HEIGHT;
+	this.ctx = this.canvas.getContext('2d');
+
 	this.objects = []
 	this.prevTime = Date.now()
 	this.speed = 4
@@ -56,13 +62,30 @@ function Game(canvas) {
 			requestAnimFrame(this.update.bind(this))
 			return
 		}
-		this.ctx.save();
-		this.ctx.scale(canvas.width / GAME_WIDTH, canvas.height / GAME_HEIGHT);
-		this.ctx.clearRect(0, 0, GAME_WIDTH, GAME_HEIGHT)
+		this.ctx.fillStyle = '#333';
+		this.ctx.fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
+		this.ext_ctx.clearRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
 		this.physics(this.timeDelta)
 		this.draw()
-		this.ctx.restore();
-		requestAnimFrame(this.update.bind(this))
+
+		var numSlices = 200;
+		var sliceHeight = GAME_HEIGHT / numSlices;
+		var topWidth = 0.25;
+		for (var n = 0; n < numSlices; n ++) {
+			var sy = n * sliceHeight;
+			var dWidth = topWidth + (1 - topWidth) * (n + 1) / numSlices;
+
+			dWidth *= this.ext_canvas.width;
+			var dx = (this.ext_canvas.width - dWidth) / 2;
+
+			this.ext_ctx.drawImage(this.canvas, 0, sy, GAME_WIDTH, sliceHeight, 
+				dx, (this.ext_canvas.height + sy) / 2, dWidth, 
+				sliceHeight * this.ext_canvas.height / GAME_HEIGHT);
+		}
+
+		this.objects.hud.draw(this.ext_ctx);
+
+		requestAnimFrame(this.update.bind(this));
 	}
 	this.physics = function(timeDelta) {
 		this.timer += timeDelta
@@ -82,7 +105,11 @@ function Game(canvas) {
 
 	this.draw = function() {
 		for (var i = 0; i < this.objects.length; i++) {
-			this.objects[i].draw(this.ctx);
+			if (this.objects[i] === this.objects['hud'])
+				; // Ignore
+				// this.objects.hud.draw(this.ext_ctx);
+			else
+				this.objects[i].draw(this.ctx);
 		}
 	}
 
