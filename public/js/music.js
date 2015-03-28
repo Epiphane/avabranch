@@ -52,7 +52,7 @@ Music.prototype.load = function() {
 
 Music.prototype.play = function() {
    for (var i in this.tracks) {
-      this.tracks[i].fadeIn();
+      this.tracks[i].play();
    }
 };
 

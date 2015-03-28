@@ -26,6 +26,8 @@ function Line(game, color, x, y, r, keys, xSpeed, ySpeed, sound) {
 		sound.play();
 		if (this.isDead)
 			sound.mute();
+		else
+			sound.unmute();//fadeIn(200);
 
 		if (sound.analyse) {
 			var self = this;

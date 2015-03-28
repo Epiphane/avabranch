@@ -7,8 +7,8 @@
 // var musicTime = 4.55;
 
 var levels = [
-	[new Music('example'), null],
-	[new Music('jungle'), Transition]
+	[new Music('jungle'), null],
+	[new Music('dub'), Transition]
 ];
 
 function Game(canvas) {
@@ -41,6 +41,7 @@ function Game(canvas) {
 		var transition = level[1];
 		this.level = num;
 
+		// music.play();
 		this.objects['player'].setMusic(music);
 		if (transition) {
 			this.transition = new transition(this);

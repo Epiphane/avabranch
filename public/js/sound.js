@@ -127,12 +127,9 @@
       if (!(this.loading || this.ready))
          this.load();
 
-      if (this.playing)
-         return this;
-
       this.whenReady(function() {
-         if (this.playing)
-            return;
+         if (this.source)
+            this.source.stop();
 
          var source = this.source = context.createBufferSource();
          this.source.connect(this.gain);
@@ -199,12 +196,14 @@
    };
 
    sound.prototype.setTime = function(time) {
-      if (this.playing)
-         this.stop();
-
-      this.time = time;
-      if (this.playing)
-         this.start();
+      this.whenReady(function() {
+         if (this.source)
+            this.source.stop();
+         this.time = time;
+   
+         if (this.playing)
+            this.start();
+      });
    };
 
    sound.prototype.setVolume = function(val) {
@@ -254,10 +253,12 @@
    };
 
    sound.prototype.fadeIn = function(duration, callback) {
-      return this.setVolume(0).fadeTo(100, duration, callback);
+      // return this.setVolume(0).fadeTo(100, duration, callback);
+      this.setVolume(100);
    };
    sound.prototype.fadeOut = function(duration, callback) {
-      return this.fadeTo(0, duration, callback);
+      // return this.fadeTo(0, duration, callback);
+      this.setVolume(0);
    };
 
    sound.prototype.whenReady = function(func) {
