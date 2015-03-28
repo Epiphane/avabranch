@@ -55,7 +55,7 @@ function Game(canvas) {
 		}
 
 		this.objects['player'].syncTracks();
-		if (this.objects['player'].music.tracks[0].getRemainingTime() < 4) {
+		if (this.objects['player'].music.tracks[0].getRemainingTime() < 8) {
 			this.spawning = false;
 		}
 
