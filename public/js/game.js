@@ -7,8 +7,8 @@
 // var musicTime = 4.55;
 
 var levels = [
-	[new Music('jungle'), null],
-	[new Music('dub'), Transition]
+	[new Music('jungle'), JungleTransition],
+	[new Music('dub'), DubTransition]
 ];
 
 function Game(canvas) {
