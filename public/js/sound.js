@@ -123,12 +123,12 @@
       }
    };
 
-   sound.prototype.play = function() {
+   sound.prototype.start = function() {
+      if (!(this.loading || this.ready))
+         this.load();
+
       if (this.playing)
          return this;
-
-      if (!this.loading)
-         this.load();
 
       this.whenReady(function() {
          if (this.playing)
@@ -152,20 +152,28 @@
       return this;
    };
 
+   sound.prototype.play = function() {
+      this.start();
+   };
+
    sound.prototype.pause = function() {
-      this.getTime();
-      if (this.playing)
-         this.source.stop();
-      this.playing = false;
+      this.whenReady(function() {
+         this.getTime();
+         if (this.source)
+            this.source.stop();
+         this.playing = false;
+      });
 
       return this;
    };
 
    sound.prototype.stop = function() {
-      this.time = 0;
-      if (this.playing)
-         this.source.stop();
-      this.playing = false;
+      this.whenReady(function() {
+         this.time = 0;
+         if (this.source)
+            this.source.stop();
+         this.playing = false;
+      });
 
       return this;
    };
@@ -184,7 +192,7 @@
       this.time = time;
       this.playing = false;
 
-      this.play();
+      this.start();
    };
 
    sound.prototype.setVolume = function(val) {

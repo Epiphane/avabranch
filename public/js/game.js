@@ -28,8 +28,10 @@ function Game(canvas) {
 	};
 	
 	this.update = function(time) {
-		if (!this.play)
+		if (!this.play) {
+			this.objects['player'].music.pause();
 			return;
+		}
 
 		this.objects['player'].syncTracks();
 
@@ -39,11 +41,44 @@ function Game(canvas) {
 			requestAnimFrame(this.update.bind(this))
 			return
 		}
+		this.physics(this.timeDelta)
+		this.draw()
+
+		requestAnimFrame(this.update.bind(this));
+	}
+
+	this.physics = function(timeDelta) {
+		this.timer += timeDelta
+		if (this.timer > this.timeTillLevel) {
+			this.timer = 0
+			if (this.objects["spawner"]) {
+				this.objects["spawner"].level += 1
+			}
+			if (this.objects["power_spawn"]) {
+				this.objects["power_spawn"].spawn()
+			}
+		}
+		for (var i = 0; i < this.objects.length; i++) {
+			this.objects[i].physics(timeDelta)
+		}
+	}
+
+	this.draw = function() {
 		this.ctx.fillStyle = '#000';
 		this.ctx.fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
 		this.ext_ctx.clearRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
-		this.physics(this.timeDelta)
-		this.draw()
+
+		this.ctx.fillStyle = '#232323';
+		for (var x = 0; x <= GAME_WIDTH; x += GAME_WIDTH / 8)
+			this.ctx.fillRect(x - 5, 0, 10, GAME_HEIGHT);
+
+		for (var i = 0; i < this.objects.length; i++) {
+			if (this.objects[i] === this.objects['hud'])
+				; // Ignore
+				// this.objects.hud.draw(this.ext_ctx);
+			else
+				this.objects[i].draw(this.ctx);
+		}
 
 		var numSlices = GAME_HEIGHT / 4;
 		var sliceHeight = GAME_HEIGHT / numSlices;
@@ -62,37 +97,6 @@ function Game(canvas) {
 		}
 
 		this.objects.hud.draw(this.ext_ctx);
-
-		requestAnimFrame(this.update.bind(this));
-	}
-	this.physics = function(timeDelta) {
-		this.timer += timeDelta
-		if (this.timer > this.timeTillLevel) {
-			this.timer = 0
-			if (this.objects["spawner"]) {
-				this.objects["spawner"].level += 1
-			}
-			if (this.objects["power_spawn"]) {
-				this.objects["power_spawn"].spawn()
-			}
-		}
-		for (var i = 0; i < this.objects.length; i++) {
-			this.objects[i].physics(timeDelta)
-		}
-	}
-
-	this.draw = function() {
-		this.ctx.fillStyle = '#232323';
-		for (var x = 0; x <= GAME_WIDTH; x += GAME_WIDTH / 8)
-			this.ctx.fillRect(x - 5, 0, 10, GAME_HEIGHT);
-
-		for (var i = 0; i < this.objects.length; i++) {
-			if (this.objects[i] === this.objects['hud'])
-				; // Ignore
-				// this.objects.hud.draw(this.ext_ctx);
-			else
-				this.objects[i].draw(this.ctx);
-		}
 	}
 
 	this.addObject = function(name, o) {

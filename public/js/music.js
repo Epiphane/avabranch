@@ -55,3 +55,9 @@ Music.prototype.play = function() {
       this.tracks[i].play();
    }
 };
+
+Music.prototype.pause = function() {
+   for (var i in this.tracks) {
+      this.tracks[i].pause();
+   }
+};
