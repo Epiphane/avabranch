@@ -6,6 +6,11 @@
 // });
 // var musicTime = 4.55;
 
+var levels = [
+	[new Music('example'), null],
+	[new Music('jungle'), Transition]
+];
+
 function Game(canvas) {
 	this.ext_canvas = canvas
 	this.ext_ctx = canvas.getContext("2d")
@@ -23,8 +28,23 @@ function Game(canvas) {
 	this.timeTillLevel = 10000
 	this.timer = 0
 
+	this.spawning = true;
+	this.transition = null;
+
 	this.nextLevel = function() {
-		console.log('done!');
+		this.setLevel(this.level + 1);
+	};
+
+	this.setLevel = function(num) {
+		var level = levels[num];
+		var music = level[0];
+		var transition = level[1];
+		this.level = num;
+
+		this.objects['player'].setMusic(music);
+		if (transition) {
+			this.transition = new transition(this);
+		}
 	};
 	
 	this.update = function(time) {
@@ -34,6 +54,9 @@ function Game(canvas) {
 		}
 
 		this.objects['player'].syncTracks();
+		if (this.objects['player'].music.tracks[0].getRemainingTime() < 4) {
+			this.spawning = false;
+		}
 
 		this.timeDelta = time - this.prevTime
 		this.prevTime = time
@@ -48,18 +71,28 @@ function Game(canvas) {
 	}
 
 	this.physics = function(timeDelta) {
-		this.timer += timeDelta
-		if (this.timer > this.timeTillLevel) {
-			this.timer = 0
-			if (this.objects["spawner"]) {
-				this.objects["spawner"].level += 1
-			}
-			if (this.objects["power_spawn"]) {
-				this.objects["power_spawn"].spawn()
-			}
-		}
 		for (var i = 0; i < this.objects.length; i++) {
 			this.objects[i].physics(timeDelta)
+		}
+
+		if (this.transition) {
+			this.transition.update(timeDelta);
+			if (this.transition.done) {
+				this.transition = null;
+				this.spawning = true;
+			}
+		}
+		else {
+			this.timer += timeDelta
+			if (this.timer > this.timeTillLevel) {
+				this.timer = 0
+				if (this.objects["spawner"]) {
+					this.objects["spawner"].level += 1
+				}
+				if (this.objects["power_spawn"]) {
+					this.objects["power_spawn"].spawn()
+				}
+			}
 		}
 	}
 
@@ -72,6 +105,9 @@ function Game(canvas) {
 		for (var x = 0; x <= GAME_WIDTH; x += GAME_WIDTH / 8)
 			this.ctx.fillRect(x - 5, 0, 10, GAME_HEIGHT);
 
+		if (this.transition)
+			this.transition.drawOnBoard(this.ctx);
+
 		for (var i = 0; i < this.objects.length; i++) {
 			if (this.objects[i] === this.objects['hud'])
 				; // Ignore
@@ -79,6 +115,9 @@ function Game(canvas) {
 			else
 				this.objects[i].draw(this.ctx);
 		}
+
+		if (this.transition)
+			this.transition.drawOnBackground(this.ext_ctx);
 
 		var numSlices = GAME_HEIGHT / 4;
 		var sliceHeight = GAME_HEIGHT / numSlices;
@@ -97,6 +136,9 @@ function Game(canvas) {
 		}
 
 		this.objects.hud.draw(this.ext_ctx);
+
+		if (this.transition)
+			this.transition.drawOnHUD(this.ext_ctx);
 	}
 
 	this.addObject = function(name, o) {

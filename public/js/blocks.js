@@ -18,22 +18,25 @@ function BlockSpawner(game, speed, level) {
 				}
 			}
 		}
+
+		for (var i = 0; i < this.blocks.length; i++) {
+			this.blocks[i].physics(timeDelta)
+		}
 		/* spawning algo
 		 * level 1 block spawn chance = 1.5/100
 		 * level increases by .5/100 chance for each level
 		 * block size is random between 10x100 and 100x10
 		 *
 		 */
+		if (this.game.spawning === false)
+			return;
+
 		if (Math.random() * 100 > 100 - this.level / 2 - 1) {
 			var w = GAME_WIDTH / 8;
 			var x = Math.floor(Math.random() * 8) * w;
 			var h = Math.ceil(Math.random() * 9) * 10
 			var y = -h
 			this.blocks.push(new Block(x, y, w, h, this.speed))
-		}
-
-		for (var i = 0; i < this.blocks.length; i++) {
-			this.blocks[i].physics(timeDelta)
 		}
 	}
 }

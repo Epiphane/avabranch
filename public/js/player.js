@@ -64,13 +64,13 @@ function Player(game, x, y, speed, ySpeed) {
 	this.lines[3].setDead(true);
 
 	this.syncTracks = function() {
-		// console.log(tracks[3].getVolume());
+		if (!this.music.tracks[0].playing)
+			return;
+
 		var time = this.music.tracks[0].getTime();
-		// console.log(time);
 		for(var i = 1; i < 4; i ++) {
 			var t = this.music.tracks[i].getTime();
 			if (Math.abs(t - time) > 0.1) {
-				// console.log(i, t);
 				this.music.tracks[i].setTime(time);
 			}
 		}

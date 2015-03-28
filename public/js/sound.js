@@ -134,18 +134,22 @@
          if (this.playing)
             return;
 
-         this.source = context.createBufferSource();
+         var source = this.source = context.createBufferSource();
          this.source.connect(this.gain);
          this.source.loop = this.loop;
          this.source.buffer = this.buffer;
 
          var self = this;
-         this.source.onended = function() {
-            self.trigger('complete');
+         this.source.onended = function(event) {
+            var elapsed = source.context.currentTime - source.startTime;
+            if (elapsed >= source.buffer.duration) {
+               self.trigger('complete');
+               self.playing = false;
+            }
          };
 
          this.source.start(0, this.time);
-         this.startTime = this.source.context.currentTime - this.time;
+         source.startTime = this.source.context.currentTime - this.time;
          this.playing = true;
       });
 
@@ -180,19 +184,27 @@
 
    sound.prototype.getTime = function() {
       if (this.playing) {
-         this.time = this.source.context.currentTime - this.startTime
+         this.time = this.source.context.currentTime - this.source.startTime;
       }
 
       return this.time;
    };
 
+   sound.prototype.getRemainingTime = function() {
+      return this.getDuration() - this.getTime();
+   };
+
+   sound.prototype.getDuration = function() {
+      return (this.buffer || {}).duration;
+   };
+
    sound.prototype.setTime = function(time) {
       if (this.playing)
          this.stop();
-      this.time = time;
-      this.playing = false;
 
-      this.start();
+      this.time = time;
+      if (this.playing)
+         this.start();
    };
 
    sound.prototype.setVolume = function(val) {
