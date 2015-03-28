@@ -46,7 +46,7 @@ function Block(x, y, w, h, speed) {
 	this.speed = speed || 4
 	this.draw = function(ctx) {
 		ctx.fillStyle = "#ababab"
-		ctx.fillRect(this.x, this.y, this.w, this.h)
+		ctx.fillRect(this.x, this.y, this.w, this.h);
 	}
 	this.physics = function(timeDelta) {
 		this.y += this.speed * timeDelta * .05

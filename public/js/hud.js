@@ -17,7 +17,6 @@ function HUD(game, pre) {
 		this.multiplier -= dead
 		if (this.multiplier === 0)
 			this.gameOver = true
-		this.game.setMusic(!this.gameOver);
 		this.multiplier *= branchState
 		this.score += Math.ceil(1 * this.multiplier * timeDelta / 100)
 	}
@@ -146,9 +145,6 @@ function HUD(game, pre) {
 		ctx.fill();
 
 	}
-	keyListeners.push(['enter', function() {
-		startGame()
-	}.bind(this)])
 	this.suspend = function() {
 		if (document.webkitHidden && !this.game.paused && this.game.play) {
 			this.game.paused = true
@@ -162,12 +158,10 @@ function HUD(game, pre) {
 			if (!this.game.paused && this.game.play) {
 				this.game.paused = true
 				this.game.play = false
-				this.game.setMusic(false);
 				this.game.draw()
 			} else if (this.game.paused && !this.game.play) {
 				this.game.paused = false
 				this.game.play = true
-				this.game.setMusic(true);
 				this.game.update()
 			}
 		}.bind(this)])

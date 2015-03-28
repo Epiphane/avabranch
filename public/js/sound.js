@@ -19,6 +19,7 @@
    var sound = function(src, options) {
       options = options || {};
 
+      this.name     = src;
       this.playing  = false;
       this.ready    = false;
       this.autoplay = options.autoplay;
@@ -28,6 +29,8 @@
       this.analyse  = options.analyse;
       this.time     = 0;
 
+      this.events = {};
+
       this.sources = [];
       if (src instanceof Array) {
          for (var j in src) {
@@ -35,7 +38,7 @@
                this.addSource(src[j]);
             }
          }
-      } else if (options.formats.length) {
+      } else if (options.formats) {
          for (var k in options.formats) {
             if (options.formats.hasOwnProperty(k)) {
                this.addSource(src + "." + options.formats[k]);
@@ -84,12 +87,13 @@
       if (this.autoplay)
          this.play();
 
-      this.ready = true;
+      this.setReady(true);
    };
 
    sound.prototype.load = function(src, onSuccess, onError) {
       if (arguments.length === 0) {
          var i = 0;
+         this.loading = true;
 
          var self = this;
          var nextSource = function(err) {
@@ -98,6 +102,7 @@
             else {
                self.load(self.sources[i++], function(buffer) {
                   self.setBuffer(buffer);
+                  self.loading = false;
                }, nextSource);
             }
          }
@@ -122,16 +127,27 @@
       if (this.playing)
          return this;
 
-      this.source = context.createBufferSource();
-      this.source.connect(this.gain);
-      this.source.loop = this.loop;
-      this.source.buffer = this.buffer;
+      if (!this.loading)
+         this.load();
 
-      this.source.start(0, this.time);
-      this.startTime = this.source.context.currentTime;
-      this.playing = true;
+      this.whenReady(function() {
+         if (this.playing)
+            return;
 
-      console.log(this.buffer.duration);
+         this.source = context.createBufferSource();
+         this.source.connect(this.gain);
+         this.source.loop = this.loop;
+         this.source.buffer = this.buffer;
+
+         var self = this;
+         this.source.onended = function() {
+            self.trigger('complete');
+         };
+
+         this.source.start(0, this.time);
+         this.startTime = this.source.context.currentTime - this.time;
+         this.playing = true;
+      });
 
       return this;
    };
@@ -163,9 +179,9 @@
    };
 
    sound.prototype.setTime = function(time) {
-      this.time = time;
       if (this.playing)
          this.stop();
+      this.time = time;
       this.playing = false;
 
       this.play();
@@ -227,96 +243,36 @@
    sound.prototype.whenReady = function(func) {
       var self = this;
       if (!this.ready) {
-         // this.bind("canplay.buzzwhenready", function() {
+         this.bind("ready", function() {
             func.call(self);
-         // });
+         });
       } else {
          func.call(self);
       }
    };
 
-   var audioBuffer;
-   var sourceNode;
-   var analyzer, javascriptNode;
+   sound.prototype.bind = function(event, func) {
+      var callbacks = this.events[event] || [];
+      callbacks.push(func);
 
+      this.events[event] = callbacks;
+   };
 
-   // load the sound
-   // setupAudioNodes();
-   // loadSound("/audio/track4.ogg");
-
-   function setupAudioNodes() {
-      // setup a javascript node
-      // javascriptNode = context.createScriptProcessor(2048, 1, 1);
-      // connect to destination, else it isn't called
-      // javascriptNode.connect(context.destination);
-
-      // analyzer = context.createAnalyser();
-      // analyzer.smoothingTimeConstant = 0.3;
-      // analyzer.fftSize = 1024;
-
-      // create a buffer source node
-      sourceNode = context.createBufferSource();
-
-      // analyzer.connect(javascriptNode);
-
-      // connext source to analyzer
-      // sourceNode.connect(analyzer);
-
-      // and connect to destination
-      sourceNode.connect(context.destination);
-   }
-
-   // load the specified sound
-   function loadSound(url) {
-      var request = new XMLHttpRequest();
-      request.open('GET', url, true);
-      request.responseType = 'arraybuffer';
-
-      // When loaded decode the data
-      request.onload = function() {
-
-         // decode the data
-         context.decodeAudioData(request.response, function(buffer) {
-            // when the audio is decoded play the sound
-            playSound(buffer);
-         }, onError);
+   sound.prototype.trigger = function(event) {
+      var callbacks = this.events[event] || [];
+      for (var i in callbacks) {
+         callbacks[i].call(this);
       }
-      request.send();
-   }
+   };
 
+   sound.prototype.setReady = function(ready) {
+      this.ready = ready;
+      if (ready)
+         this.trigger('ready');
+   };
 
-   function playSound(buffer) {
-      sourceNode.buffer = buffer;
-      sourceNode.start(0);
-   }
-
-   // log if an error occurs
    function reportError(e) {
       console.error(e);
-   }
-
-   // javascriptNode.onaudioprocess = function() {
-   //    // Get the average for the first channel
-   //    var array = new Uint8Array(analyzer.frequencyBinCount);
-   //    analyzer.getByteFrequencyData(array);
-   //    var average = getAverageVolume(array);
-
-   //    // console.log(average);
-   // };
-
-   function getAverageVolume(array) {
-      var values = 0;
-      var average;
-
-      var length = array.length;
-
-      // get all the frequency amplitudes
-      for (var i = 0; i < length; i++) {
-         values += array[i];
-      }
-
-      average = values / length;
-      return average;
    }
 
    return {

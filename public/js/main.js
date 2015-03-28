@@ -51,7 +51,8 @@ function startGame() {
 	keyListeners = []
 	game.play = false
 	game = new Game(canvas)
-	player = new Player(game, null, null, null, game.speed)
+	player = new Player(game, null, null, null, game.speed);
+	player.setMusic(new Music('jungle'));
 	spawner = new BlockSpawner(game, game.speed)
 	hud = new HUD(game)
 	power_spawner = new PowerupSpawner(game)
@@ -59,9 +60,13 @@ function startGame() {
 	game.addObject("player", player)
 	game.addObject("power_spawn", power_spawner)
 	game.addObject("hud", hud)
-	game.setMusic(true);
 	game.update()
 }
+
+document.addEventListener('keyup', function(evt) {
+	if (evt.keyCode === 13)
+		startGame();
+});
 
 function toggleSound(){
 	var button = document.getElementById("mute")

@@ -17,70 +17,59 @@ function Line(game, color, x, y, r, keys, xSpeed, ySpeed, sound) {
 	this.ticks_per_point = 1;
 	this.ticks = 0;
 
-	this.times = [0, 0, 0, 0, 0, 0, 0, 0, 0];
+	this.setTrack = function(sound) {
+		if (this.sound)
+			this.sound.stop();
 
-	sound.play();
-	sound.mute();
+		this.sound = sound;
 
-	if (sound.analyse) {
-		var self = this;
-		// var max = 0, up = true;
-		// var nt = new Date().getTime();
-		sound.onaudioprocess = function() {
-	      var array = new Uint8Array(sound.analyser.frequencyBinCount);
-	      sound.analyser.getByteFrequencyData(array);
+		sound.play();
+		if (this.isDead)
+			sound.mute();
 
-	      var tot = 0, num = 0;
-	      for (var i in array) {
-	      	tot += array[i];
-	      	num ++;
-	      }
-	      var average = tot / num;
+		if (sound.analyse) {
+			var self = this;
+			// var max = 0, up = true;
+			// var nt = new Date().getTime();
+			sound.onaudioprocess = function() {
+		      var array = new Uint8Array(sound.analyser.frequencyBinCount);
+		      sound.analyser.getByteFrequencyData(array);
 
-	      // 2.5167
-	      // if ((up && average > max) || (!up && average < max)) {
-	      // 	max = average;
-	      // 	document.getElementById('canv').style.background = 'black';
-	      // }
-	      // else {
-	      // 	up = !up;
-	      // 	if (!up) {
-		     //  	var t = new Date().getTime();
-		     //  	self.times.push(t - nt);
-		     //  	self.times.shift();
-		     //  	nt = t;
+		      var tot = 0, num = 0;
+		      for (var i in array) {
+		      	tot += array[i];
+		      	num ++;
+		      }
+		      var average = tot / num;
 
-		     //  	var tot = 0, num = 0;
-			    //   for (var i in self.times) {
-			    //   	tot += self.times[i];
-			    //   	num ++;
-			    //   }
-		     //  	console.log(1000 / (tot / num));
-		     //  	document.getElementById('canv').style.background = '#333333';
-		     //  }
-	      // }
-
-	      self.r = average / 6 + self.base_r;
+		      self.r = average / 6 + self.base_r;
+			}
 		}
-	}
+	};
+	if (sound)
+		this.setTrack(sound);
 	
 	var fading = false;
 	this.setDead = function(dead) {
-		console.log(dead);
 		this.isDead = dead;
+		if (!this.sound)
+			return this;
+
 		if (!dead) {
 			fading = true;
-			sound.unmute();
-			sound.fadeIn(200, function() {
+			this.sound.unmute();
+			this.sound.fadeIn(200, function() {
 				fading = false;
 			});
 		}
 		else {
 			if (fading)
-				sound.mute();
+				this.sound.mute();
 			else
-				sound.fadeOut(200);
+				this.sound.fadeOut(200);
 		}
+	
+		return this;
 	};
 
 	this.clearGone = function(){

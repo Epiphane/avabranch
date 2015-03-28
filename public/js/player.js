@@ -1,33 +1,33 @@
-var tracks = [
-	new buz.sound("/audio/track1", {
-		formats: [ "mp3", "ogg" ],
-		preload: true,
-		autoplay: false,
-		loop: true,
-		// analyse: true
-	}),
-	new buz.sound("/audio/track2", {
-		formats: [ "mp3", "ogg" ],
-		preload: true,
-		autoplay: false,
-		loop: true,
-		// analyse: true
-	}),
-	new buz.sound("/audio/track3", {
-		formats: [ "mp3", "ogg" ],
-		preload: true,
-		autoplay: false,
-		loop: true,
-		// analyse: true
-	}),
-	new buz.sound("/audio/track4", {
-		formats: [ "mp3", "ogg" ],
-		preload: true,
-		autoplay: false,
-		loop: true,
-		analyse: true
-	})
-];
+// var tracks = [
+// 	new buz.sound("/audio/ava_jungle_drums", {
+// 		formats: [ "mp3" ],
+// 		preload: true,
+// 		autoplay: false,
+// 		loop: true,
+// 		// analyse: true
+// 	}),
+// 	new buz.sound("/audio/ava_jungle_bass", {
+// 		formats: [ "mp3" ],
+// 		preload: true,
+// 		autoplay: false,
+// 		loop: true,
+// 		// analyse: true
+// 	}),
+// 	new buz.sound("/audio/ava_jungle_lead", {
+// 		formats: [ "mp3" ],
+// 		preload: true,
+// 		autoplay: false,
+// 		loop: true,
+// 		// analyse: true
+// 	}),
+// 	new buz.sound("/audio/ava_jungle_melody", {
+// 		formats: [ "mp3" ],
+// 		preload: true,
+// 		autoplay: false,
+// 		loop: true,
+// 		// analyse: thisrue
+// 	})
+// ];
 var bps = 2.5167;
 // var t, nt = new Date().getTime();
 // var canv = document.getElementById('canv');
@@ -36,17 +36,6 @@ var bps = 2.5167;
 // 	canv.style.background = '#333';
 // 	setTimeout(function() { canv.style.background = 'black'; }, 50);
 // }, 1000 / bps);
-
-function syncTracks() {
-	// console.log(tracks[3].getVolume());
-	var time = tracks[0].getTime();
-	for(var i = 1; i < 4; i ++) {
-		var t = tracks[i].getTime();
-		if (Math.abs(t - time) > 0.1) {
-			tracks[i].setTime(time);
-		}
-	}
-}
 
 function Player(game, x, y, speed, ySpeed) {
 	this.game = game
@@ -66,13 +55,38 @@ function Player(game, x, y, speed, ySpeed) {
 	//}
 	this.lines = []
 	for (var i = 0; i < this.lineCount; i++) {
-		this.lines.push(new Line(this.game, global_controls.colors[i], this.x + i * this.lineRadius * 2, this.y, this.lineRadius, global_controls.keyMaps[this.branchStates[this.branchState]][i], this.speed, this.ySpeed, tracks[3 - i]));
+		this.lines.push(new Line(this.game, global_controls.colors[i], this.x + i * this.lineRadius * 2, this.y, this.lineRadius, global_controls.keyMaps[this.branchStates[this.branchState]][i], this.speed, this.ySpeed));
 	}
 	//bad - start with 2 lines
 	this.lines[0].setDead(false);
 	this.lines[1].setDead(false);
 	this.lines[2].setDead(true);
 	this.lines[3].setDead(true);
+
+	this.syncTracks = function() {
+		// console.log(tracks[3].getVolume());
+		var time = this.music.tracks[0].getTime();
+		// console.log(time);
+		for(var i = 1; i < 4; i ++) {
+			var t = this.music.tracks[i].getTime();
+			if (Math.abs(t - time) > 0.1) {
+				// console.log(i, t);
+				this.music.tracks[i].setTime(time);
+			}
+		}
+	}
+
+	this.setMusic = function(music) {
+		this.music = music;
+
+		for(var i = 0; i < 4; i ++)
+			this.lines[i].setTrack(music.tracks[i]);
+
+		var self = this;
+		music.bind('complete', function() {
+			self.game.nextLevel();
+		});
+	};
 	
 	this.physics = function(timeDelta) {
 		var dead = 0

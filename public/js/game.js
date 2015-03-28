@@ -20,41 +20,18 @@ function Game(canvas) {
 	this.speed = 4
 	this.paused = false
 	this.play = true
-	this.timeTillLevel = 5000
+	this.timeTillLevel = 10000
 	this.timer = 0
+
+	this.nextLevel = function() {
+		console.log('done!');
+	};
 	
-	var musicFading = false;
-	var musicPlaying = false;
-	this.setMusic = function(on) {
-		return;
-
-		if (on != musicPlaying) {
-			if (on) {
-				music.setTime(musicTime);
-				musicFading = true;
-				music.fadeIn(200, function() {
-					musicFading = false;
-				});
-			}
-			else {
-				if (musicFading) {
-					music.stop();
-					musicTime = music.getTime();
-				}
-				else
-					music.fadeOut(200, function() {
-						musicTime = music.getTime();
-					});
-			}
-
-			musicPlaying = on;
-		}
-	}
 	this.update = function(time) {
 		if (!this.play)
 			return;
 
-		syncTracks();
+		this.objects['player'].syncTracks();
 
 		this.timeDelta = time - this.prevTime
 		this.prevTime = time
