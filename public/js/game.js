@@ -10,6 +10,8 @@ var levels = [
 	[new Music('jungle', 120), JungleTransition],
 	[new Music('dub', 120), DubTransition]
 ];
+// Load first level's music
+levels[0][0].load();
 
 function Game(canvas) {
 	this.ext_canvas = canvas
@@ -61,6 +63,11 @@ function Game(canvas) {
 			self.beat();
 		});
 
+		music.bind('ready', function() {
+			music.play();
+			self.update();
+		});
+
 		this.beat();
 	}
 
@@ -71,32 +78,55 @@ function Game(canvas) {
 		this.level = num;
 
 		this.setMusic(music);
+		if (music.ready)
+			music.play();
 
 		if (transition) {
 			this.transition = new transition(this);
 		}
+
+		// Get next level loading
+		if (num + 1 < levels.length)
+			levels[num + 1][0].load();
 	};
 	
 	this.update = function(time) {
-		if (!this.play) {
-			this.music.pause();
+		if (!this.music.ready) {
+			console.log(this.music.songsReady);
+
+			this.draw();
+			this.ext_ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
+			this.ext_ctx.fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
+
+			this.ext_ctx.fillStyle = 'white';
+			this.ext_ctx.font = '60px Arial';
+			var size = this.ext_ctx.measureText('Loading');
+			this.ext_ctx.fillText('Loading', GAME_WIDTH / 2 - size.width / 2, GAME_HEIGHT / 2 - 30);
+
 			return;
 		}
+		else {
+			if (!this.play) {
+				this.music.pause();
+				return;
+			}
 
-		this.syncTracks();
-		this.music.update();
-		if (this.music.tracks[0].getRemainingTime() < 8) {
-			this.spawning = false;
+			this.syncTracks();
+			this.music.update();
+			if (this.music.tracks[0].getRemainingTime() < 8) {
+				this.spawning = false;
+			}
+
+			this.timeDelta = time - this.prevTime
+			this.prevTime = time
+			if (isNaN(this.timeDelta)) {
+				requestAnimFrame(this.update.bind(this))
+				return
+			}
+			this.physics(this.timeDelta);
 		}
 
-		this.timeDelta = time - this.prevTime
-		this.prevTime = time
-		if (isNaN(this.timeDelta)) {
-			requestAnimFrame(this.update.bind(this))
-			return
-		}
-		this.physics(this.timeDelta)
-		this.draw()
+		this.draw();
 
 		requestAnimFrame(this.update.bind(this));
 	}

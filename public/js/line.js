@@ -23,7 +23,6 @@ function Line(game, color, x, y, r, keys, xSpeed, ySpeed, sound) {
 
 		this.sound = sound;
 
-		sound.play();
 		if (this.isDead)
 			sound.mute();
 		else

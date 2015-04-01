@@ -22,6 +22,9 @@ function Music(name, bpm) {
       })
    ];
 
+   this.bpm = bpm;
+   this.beat = 1;
+
    this.callbacks = {};
 
    var self = this;
@@ -29,8 +32,19 @@ function Music(name, bpm) {
       self.trigger('complete');
    });
 
-   this.bpm = bpm;
-   this.beat = 1;
+   this.ready = false;
+   this.bind('ready', function() {
+      self.ready = true;
+   });
+
+   this.songsReady = 0;
+   for (var i in this.tracks) {
+      this.tracks[i].bind('ready', function() {
+         if (++self.songsReady === self.tracks.length) {
+            self.trigger('ready');
+         }
+      });
+   }
 
    var self = this;
    var max = 0, up = true;
@@ -51,7 +65,7 @@ function Music(name, bpm) {
          if (average >= max)
             max = average;
          else {
-            console.log(max)
+            // console.log(max)
             up = false;
          }
       }
