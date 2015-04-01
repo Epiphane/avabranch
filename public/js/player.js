@@ -63,29 +63,9 @@ function Player(game, x, y, speed, ySpeed) {
 	this.lines[2].setDead(true);
 	this.lines[3].setDead(true);
 
-	this.syncTracks = function() {
-		if (!this.music.tracks[0].playing)
-			return;
-
-		var time = this.music.tracks[0].getTime();
-		for(var i = 1; i < 4; i ++) {
-			var t = this.music.tracks[i].getTime();
-			if (Math.abs(t - time) > 0.1) {
-				this.music.tracks[i].setTime(time);
-			}
-		}
-	}
-
 	this.setMusic = function(music) {
-		this.music = music;
-
 		for(var i = 0; i < 4; i ++)
 			this.lines[i].setTrack(music.tracks[i]);
-
-		var self = this;
-		music.bind('complete', function() {
-			self.game.nextLevel();
-		});
 	};
 	
 	this.physics = function(timeDelta) {

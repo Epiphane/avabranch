@@ -1,24 +1,24 @@
-function Music(name) {
+function Music(name, bpm) {
    this.tracks = [
       new buz.sound('/audio/ava_' + name + '_drums', {
          formats: [ 'mp3' ],
          // loop: true,
-         // analyse: true
+         analyse: true
       }),
       new buz.sound('/audio/ava_' + name + '_bass', {
          formats: [ 'mp3' ],
          // loop: true,
-         // analyse: true
+         analyse: true
       }),
       new buz.sound('/audio/ava_' + name + '_lead', {
          formats: [ 'mp3' ],
          // loop: true,
-         // analyse: true
+         analyse: true
       }),
       new buz.sound('/audio/ava_' + name + '_melody', {
          formats: [ 'mp3' ],
          // loop: true,
-         // analyse: true
+         analyse: true
       })
    ];
 
@@ -28,7 +28,55 @@ function Music(name) {
    this.tracks[0].bind('complete', function() {
       self.trigger('complete');
    });
+
+   this.bpm = bpm;
+   this.beat = 1;
+
+   var self = this;
+   var max = 0, up = true;
+   var nt = new Date().getTime();
+   var sound = this.tracks[0];
+   sound.onaudioprocess = function() {
+      var array = new Uint8Array(sound.analyser.frequencyBinCount);
+      sound.analyser.getByteFrequencyData(array);
+
+      var tot = 0, num = 0;
+      for (var i in array) {
+         tot += array[i];
+         num ++;
+      }
+      var average = tot / num;
+
+      if (up) {
+         if (average >= max)
+            max = average;
+         else {
+            console.log(max)
+            up = false;
+         }
+      }
+      else {
+         if (average < max)
+            max = average;
+         else
+            up = true;
+      }
+   }
 }
+
+Music.prototype.getBeat = function() {
+   var time = this.tracks[0].getTime();
+   return time * 2;
+};
+
+Music.prototype.update = function() {
+   var beat = Math.floor(this.getBeat()) + 1;
+
+   if (beat > this.beat) {
+      this.beat = beat;
+      this.trigger('beat');
+   }
+};
 
 Music.prototype.trigger = function(event) {
    var callbacks = this.callbacks[event] || [];

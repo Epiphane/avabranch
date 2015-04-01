@@ -7,8 +7,8 @@
 // var musicTime = 4.55;
 
 var levels = [
-	[new Music('jungle'), JungleTransition],
-	[new Music('dub'), DubTransition]
+	[new Music('jungle', 120), JungleTransition],
+	[new Music('dub', 120), DubTransition]
 ];
 
 function Game(canvas) {
@@ -35,14 +35,43 @@ function Game(canvas) {
 		this.setLevel(this.level + 1);
 	};
 
+	this.syncTracks = function() {
+		if (!this.music.tracks[0].playing)
+			return;
+
+		var time = this.music.tracks[0].getTime();
+		for(var i = 1; i < 4; i ++) {
+			var t = this.music.tracks[i].getTime();
+			if (Math.abs(t - time) > 0.1) {
+				this.music.tracks[i].setTime(time);
+			}
+		}
+	}
+
+	this.setMusic = function(music) {
+		this.objects['player'].setMusic(music);
+
+		this.music = music;
+
+		var self   = this;
+		music.bind('complete', function() {
+			self.nextLevel();
+		});
+		music.bind('beat', function() {
+			self.beat();
+		});
+
+		this.beat();
+	}
+
 	this.setLevel = function(num) {
 		var level = levels[num];
 		var music = level[0];
 		var transition = level[1];
 		this.level = num;
 
-		// music.play();
-		this.objects['player'].setMusic(music);
+		this.setMusic(music);
+
 		if (transition) {
 			this.transition = new transition(this);
 		}
@@ -50,12 +79,13 @@ function Game(canvas) {
 	
 	this.update = function(time) {
 		if (!this.play) {
-			this.objects['player'].music.pause();
+			this.music.pause();
 			return;
 		}
 
-		this.objects['player'].syncTracks();
-		if (this.objects['player'].music.tracks[0].getRemainingTime() < 8) {
+		this.syncTracks();
+		this.music.update();
+		if (this.music.tracks[0].getRemainingTime() < 8) {
 			this.spawning = false;
 		}
 
@@ -84,18 +114,25 @@ function Game(canvas) {
 			}
 		}
 		else {
-			this.timer += timeDelta
-			if (this.timer > this.timeTillLevel) {
-				this.timer = 0
-				if (this.objects["spawner"]) {
-					this.objects["spawner"].level += 1
-				}
-				if (this.objects["power_spawn"]) {
-					this.objects["power_spawn"].spawn()
-				}
-			}
+			// this.timer += timeDelta
+			// if (this.timer > this.timeTillLevel) {
+			// 	this.timer = 0
+			// 	if (this.objects["spawner"]) {
+			// 		this.objects["spawner"].level += 1
+			// 	}
+			// 	if (this.objects["power_spawn"]) {
+			// 		this.objects["power_spawn"].spawn()
+			// 	}
+			// }
 		}
-	}
+	};
+
+	this.beat = function() {
+		// console.log(this.music.beat);
+		if (this.music.beat % 16 === 0) {
+			this.objects['power_spawn'].spawn(this.music.beat + 8);
+		}
+	};
 
 	this.draw = function() {
 		this.ctx.fillStyle = '#000';

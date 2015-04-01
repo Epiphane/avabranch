@@ -163,7 +163,7 @@ function HUD(game, pre) {
 				this.game.paused = false
 				this.game.play = true
 				this.game.update()
-				this.game.objects['player'].music.play();
+				this.game.music.play();
 			}
 		}.bind(this)])
 		document.addEventListener("webkitvisibilitychange", this.suspend.bind(this), false);

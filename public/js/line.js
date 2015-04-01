@@ -27,26 +27,26 @@ function Line(game, color, x, y, r, keys, xSpeed, ySpeed, sound) {
 		if (this.isDead)
 			sound.mute();
 		else
-			sound.unmute();//fadeIn(200);
+			sound.fadeIn(200);
 
-		if (sound.analyse) {
-			var self = this;
-			// var max = 0, up = true;
-			// var nt = new Date().getTime();
-			sound.onaudioprocess = function() {
-		      var array = new Uint8Array(sound.analyser.frequencyBinCount);
-		      sound.analyser.getByteFrequencyData(array);
+		// if (sound.analyse) {
+		// 	var self = this;
+		// 	// var max = 0, up = true;
+		// 	// var nt = new Date().getTime();
+		// 	sound.onaudioprocess = function() {
+		//       var array = new Uint8Array(sound.analyser.frequencyBinCount);
+		//       sound.analyser.getByteFrequencyData(array);
 
-		      var tot = 0, num = 0;
-		      for (var i in array) {
-		      	tot += array[i];
-		      	num ++;
-		      }
-		      var average = tot / num;
+		//       var tot = 0, num = 0;
+		//       for (var i in array) {
+		//       	tot += array[i];
+		//       	num ++;
+		//       }
+		//       var average = tot / num;
 
-		      self.r = average / 6 + self.base_r;
-			}
-		}
+		//       self.r = average / 6 + self.base_r;
+		// 	}
+		// }
 	};
 	if (sound)
 		this.setTrack(sound);
@@ -179,10 +179,10 @@ function Line(game, color, x, y, r, keys, xSpeed, ySpeed, sound) {
 		ctx.stroke();
 		ctx.closePath();
 
-		ctx.beginPath();
-		ctx.fillStyle = 'white';
-		ctx.arc(head.x, head.y, head.r + 1, 0, 2 * Math.PI, false);
-		ctx.fill();
-		ctx.closePath();
+		// ctx.beginPath();
+		// ctx.fillStyle = 'white';
+		// ctx.arc(head.x, head.y, head.r + 1, 0, 2 * Math.PI, false);
+		// ctx.fill();
+		// ctx.closePath();
 	}
 }

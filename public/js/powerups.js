@@ -17,7 +17,7 @@ function PowerupSpawner(game, level) {
 			}
 		}
 	}
-	this.spawn = function() {
+	this.spawn = function(target) {
 		var x = Math.random() * GAME_WIDTH
 		var y = -30
 		var i = 0;
@@ -26,18 +26,19 @@ function PowerupSpawner(game, level) {
 		if (i === 4)
 			i = Math.floor(Math.random() * this.powers.length);
 
-		this.powerups.push(new Powerup(this, x, y, this.powers[i]))
+		this.powerups.push(new Powerup(this, x, y, this.powers[i], target));
 	}
 }
 
-function Powerup(parent, x, y, type) {
+function Powerup(parent, x, y, type, target) {
 	this.parent = parent
 	this.x = x || 0
 	this.y = y || 0
 	this.r = 5
 	this.isDead = false
 	this.remove = false
-	this.speed = 4
+	this.target = target || parent.game.music.beat + 8;
+	this.start  = parent.game.music.beat;
 	this.type = type || "slow"
 	this.particles = []
 	this.particleCount = 120
@@ -102,16 +103,17 @@ function Powerup(parent, x, y, type) {
 		ctx.fillRect(0, this.y, GAME_WIDTH, 10);
 	}
 	this.physics = function(timeDelta) {
-		if (!this.isDead)
-			this.y += this.speed * timeDelta * .05
-		if (this.isDead) {
-			this.r -= .2
-			if (this.r < 0) {
-				this.r = 0
-				this.remove = true
-			}
+		if (!this.isDead) {
+			var beat = this.parent.game.music.getBeat();
+			var dist = (this.target - beat) / (this.target - this.start);
 
+			this.y = (1 - dist) * GAME_HEIGHT * 2 / 3;
 		}
+
+		if (this.isDead) {
+			this.remove = true
+		}
+
 		for (var i = 0; i < this.particles.length; i++) {
 			this.particles[i].physics(timeDelta)
 		}
