@@ -13,6 +13,9 @@ var levels = [
 // Load first level's music
 levels[0][0].load();
 
+var partIcons = new Image();
+partIcons.src = '/img/parts.png';
+
 function Game(canvas) {
 	this.ext_canvas = canvas
 	this.ext_ctx = canvas.getContext("2d")
@@ -63,10 +66,16 @@ function Game(canvas) {
 			self.beat();
 		});
 
-		music.bind('ready', function() {
-			music.play();
-			self.update();
-		});
+		if (!music.ready) {
+			music.bind('ready', function() {
+				music.play();
+			});
+
+			for (var i in music.tracks) 
+				music.tracks[i].bind('ready', function() {
+					self.update();
+				});
+		}
 
 		this.beat();
 	}
@@ -92,16 +101,8 @@ function Game(canvas) {
 	
 	this.update = function(time) {
 		if (!this.music.ready) {
-			console.log(this.music.songsReady);
-
 			this.draw();
-			this.ext_ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
-			this.ext_ctx.fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
-
-			this.ext_ctx.fillStyle = 'white';
-			this.ext_ctx.font = '60px Arial';
-			var size = this.ext_ctx.measureText('Loading');
-			this.ext_ctx.fillText('Loading', GAME_WIDTH / 2 - size.width / 2, GAME_HEIGHT / 2 - 30);
+			this.drawLoading(this.ext_ctx);
 
 			return;
 		}
@@ -161,6 +162,41 @@ function Game(canvas) {
 		// console.log(this.music.beat);
 		if (this.music.beat % 16 === 0) {
 			this.objects['power_spawn'].spawn(this.music.beat + 8);
+		}
+	};
+
+	this.drawLoading = function(ctx) {
+		this.ext_ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
+		this.ext_ctx.fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
+
+		this.ext_ctx.fillStyle = 'white';
+		this.ext_ctx.font = '60px Arial';
+		var size = this.ext_ctx.measureText('Loading');
+		this.ext_ctx.fillText('Loading', GAME_WIDTH / 2 - size.width / 2, GAME_HEIGHT / 2 - 30);
+
+		var sWidth  = partIcons.width  / 2;
+		var sHeight = partIcons.height / 2;
+		var dWidth  = GAME_WIDTH  / 2;
+		var dHeight = GAME_HEIGHT / 2;
+		if (this.music.tracks[0].ready) {
+			ctx.fillStyle = '#debbbb';
+			ctx.fillRect(0, 0, dWidth, dHeight);
+			ctx.drawImage(partIcons, sWidth, sHeight, sWidth, sHeight, (dWidth - sWidth) / 2, (dHeight - sHeight) / 2, sWidth, sHeight);
+		}
+		if (this.music.tracks[1].ready) {
+			ctx.fillStyle = '#dbdebb';
+			ctx.fillRect(dWidth, 0, dWidth, dHeight);
+			ctx.drawImage(partIcons, sWidth, 0, sWidth, sHeight, (dWidth * 3 - sWidth) / 2, (dHeight - sHeight) / 2, sWidth, sHeight);
+		}
+		if (this.music.tracks[2].ready) {
+			ctx.fillStyle = '#bbbede';
+			ctx.fillRect(0, dHeight, dWidth, dHeight);
+			ctx.drawImage(partIcons, 0, sHeight, sWidth, sHeight, (dWidth - sWidth) / 2, (dHeight * 3 - sHeight) / 2, sWidth, sHeight);
+		}
+		if (this.music.tracks[3].ready) {
+			ctx.fillStyle = '#bbdec3';
+			ctx.fillRect(dWidth, dHeight, dWidth, dHeight);
+			ctx.drawImage(partIcons, 0, 0, sWidth, sHeight, (dWidth * 3 - sWidth) / 2, (dHeight * 3 - sHeight) / 2, sWidth, sHeight);
 		}
 	};
 
