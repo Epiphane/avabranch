@@ -163,6 +163,10 @@ function Game(canvas) {
 		if (this.music.beat % 16 === 0) {
 			this.objects['power_spawn'].spawn(this.music.beat + 8);
 		}
+
+		if (this.music.beat % 64 === 0) {
+			this.objects["spawner"].level += 1
+		}
 	};
 
 	this.drawLoading = function(ctx) {
