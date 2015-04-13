@@ -14,7 +14,7 @@ var levels = [
 levels[0][0].load();
 
 var partIcons = new Image();
-partIcons.src = '/img/parts.png';
+partIcons.src = 'img/parts.png';
 
 function Game(canvas) {
 	this.ext_canvas = canvas
@@ -37,7 +37,7 @@ function Game(canvas) {
 	this.transition = null;
 
 	this.nextLevel = function() {
-		this.setLevel(this.level + 1);
+		this.setLevel((this.level + 1) % 2);
 	};
 
 	this.syncTracks = function() {

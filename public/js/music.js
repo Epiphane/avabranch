@@ -1,21 +1,21 @@
 function Music(name, bpm) {
    this.tracks = [
-      new buz.sound('/audio/ava_' + name + '_drums', {
+      new buz.sound('audio/ava_' + name + '_drums', {
          formats: [ 'mp3' ],
          // loop: true,
          analyse: true
       }),
-      new buz.sound('/audio/ava_' + name + '_bass', {
+      new buz.sound('audio/ava_' + name + '_bass', {
          formats: [ 'mp3' ],
          // loop: true,
          analyse: true
       }),
-      new buz.sound('/audio/ava_' + name + '_lead', {
+      new buz.sound('audio/ava_' + name + '_lead', {
          formats: [ 'mp3' ],
          // loop: true,
          analyse: true
       }),
-      new buz.sound('/audio/ava_' + name + '_melody', {
+      new buz.sound('audio/ava_' + name + '_melody', {
          formats: [ 'mp3' ],
          // loop: true,
          analyse: true
